@@ -21,6 +21,7 @@ module.exports = function(data, cb) {
 
   var email = {
     labelIds: data.labelIds,
+    snippet: data.snippet,
     date: date,
   };
 
@@ -69,29 +70,32 @@ module.exports = function(data, cb) {
     email.bcc[w].address = email.bcc[w].address.toLowerCase();
   }
 
-  if (data.payload.parts && data.payload.parts[0]) {
-    var parts = data.payload.parts;
-    email.attachments = [];
-
-    for (var k = 0; k < parts.length; k++) {
-      var item = parts[k];
-      if (item !== null || item !== undefined) {
-        if (item.body !== null ? item.body.attachmentId : void 0) {
-          email.attachments.push({
-            filename: item.filename,
-            mimetype: item.mimeType,
-            id: item.body.attachmentId,
-            size: item.body.size
-          });
-        }
-        else if (item.mimeType === 'text/plain') {
-          email.message = String(new Buffer(item.body.data, 'base64'));
-        }
-        else if (item.mimeType === 'text/html') {
-          email.message = String(new Buffer(item.body.data, 'base64'));
-        }
+  email.attachments = [];
+  email.texts = [];
+  email.htmls = [];
+  function parseParts(parts) {
+    parts.forEach(item => {
+      if (item.body && item.body.attachmentId) {
+        email.attachments.push({
+          filename: item.filename,
+          mimetype: item.mimeType,
+          id: item.body.attachmentId,
+          size: item.body.size
+        });
       }
-    }
+      if (item.mimeType === 'text/plain') {
+        email.texts.push(String(new Buffer(item.body.data, 'base64')));
+      }
+      if (item.mimeType === 'text/html') {
+        email.htmls.push(String(new Buffer(item.body.data, 'base64')));
+      }
+      if (item.parts) {
+        parseParts(item.parts);
+      }
+    })
+  }
+  if (data.payload.parts) {
+    parseParts(data.payload.parts);
   }
   return cb(null, email);
 };
