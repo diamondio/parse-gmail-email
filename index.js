@@ -29,45 +29,46 @@ module.exports = function(data, cb) {
   for (i = 0; i < headers.length; i++) {
     var header = headers[i];
 
-    if (header.name && header.name === 'To') {
+    if (header.name && header.name.toLowerCase() === 'to') {
       email.to = header.value;
     }
-    if (header.name && header.name === 'From') {
+    if (header.name && header.name.toLowerCase() === 'from') {
       email.from = header.value;
     }
-    if (header.name && header.name === 'Subject') {
+    if (header.name && header.name.toLowerCase() === 'subject') {
       email.subject = header.value;
     }
-    if (header.name && header.name === 'Cc') {
+    if (header.name && header.name.toLowerCase() === 'cc') {
       email.cc = header.value;
     }
-    if (header.name && header.name === 'Bcc') {
+    if (header.name && header.name.toLowerCase() === 'bcc') {
       email.bcc = header.value;
     }
   }
 
   var parsedFrom = addressparser(email.from)[0];
-  email.from = {
-    name: parsedFrom.name || '',
-    address: parsedFrom.address.toLowerCase()
-  };
-  if (email.from.name === '' || email.from.name === ' ') {
-    email.from.name = email.from.address.toLowerCase();
+  if (parsedFrom) {
+    email.from = {
+      name: parsedFrom.name || '',
+      address: (parsedFrom.address || '').toLowerCase()
+    };
+  } else {
+    return cb(new Error('email missing from'));
   }
 
   email.to = addressparser(email.to);
   for (var u = 0; u < email.to.length; u++) {
-    email.to[u].address = email.to[u].address.toLowerCase();
+    email.to[u].address = (email.to[u].address || '').toLowerCase();
   }
 
   email.cc = addressparser(email.cc);
   for (var w = 0; w < email.cc.length; w++) {
-    email.cc[w].address = email.cc[w].address.toLowerCase();
+    email.cc[w].address = (email.cc[w].address || '').toLowerCase();
   }
 
   email.bcc = addressparser(email.bcc);
   for (var w = 0; w < email.bcc.length; w++) {
-    email.bcc[w].address = email.bcc[w].address.toLowerCase();
+    email.bcc[w].address = (email.bcc[w].address || '').toLowerCase();
   }
 
   email.attachments = [];
@@ -80,14 +81,16 @@ module.exports = function(data, cb) {
           filename: item.filename,
           mimetype: item.mimeType,
           id: item.body.attachmentId,
-          size: item.body.size
+          size: item.body.size,
         });
       }
-      if (item.mimeType === 'text/plain') {
-        email.texts.push(String(new Buffer(item.body.data, 'base64')));
-      }
-      if (item.mimeType === 'text/html') {
-        email.htmls.push(String(new Buffer(item.body.data, 'base64')));
+      if (item.body && item.body.data) {
+        if (item.mimeType === 'text/plain') {
+          email.texts.push(String(new Buffer(item.body.data, 'base64')));
+        }
+        if (item.mimeType === 'text/html') {
+          email.htmls.push(String(new Buffer(item.body.data, 'base64')));
+        }
       }
       if (item.parts) {
         parseParts(item.parts);
