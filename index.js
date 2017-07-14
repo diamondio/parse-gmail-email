@@ -10,10 +10,6 @@ module.exports = function(data, cb) {
     return cb(new Error('email payload required'));
   }
 
-  if (!data.payload.headers) {
-    return cb(new Error('email headers required'));
-  }
-
   var date = new Date(Number(data.internalDate));
   if (isNaN(date.getTime())) {
     return cb(new Error('email missing date'));
@@ -25,7 +21,7 @@ module.exports = function(data, cb) {
     date: date,
   };
 
-  var headers = data.payload.headers;
+  var headers = data.payload.headers || [];
   for (i = 0; i < headers.length; i++) {
     var header = headers[i];
 
