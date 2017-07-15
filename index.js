@@ -1,4 +1,5 @@
 var addressparser = require('addressparser');
+var decode = require('decode-html');
 
 module.exports = function(data, cb) {
 
@@ -17,7 +18,7 @@ module.exports = function(data, cb) {
 
   var email = {
     labelIds: data.labelIds,
-    snippet: data.snippet,
+    snippet: decode(data.snippet),
     date: date,
   };
 

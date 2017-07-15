@@ -8,7 +8,8 @@
     "url": "http://github.com/stevelacy/parse-gmail-email.git"
   },
   "dependencies": {
-    "addressparser": "^0.3.2"
+    "addressparser": "^0.3.2",
+    "decode-html": "^1.0.2"
   },
   "devDependencies": {
     "mocha": "^2.3.4",
