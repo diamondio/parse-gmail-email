@@ -48,8 +48,6 @@ module.exports = function(data, cb) {
       name: parsedFrom.name || '',
       address: (parsedFrom.address || '').toLowerCase()
     };
-  } else {
-    return cb(new Error('email missing from'));
   }
 
   email.to = addressparser(email.to);
