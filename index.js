@@ -1,5 +1,5 @@
 var addressparser = require('addressparser');
-var decode = require('decode-html');
+var decode = require('ent/decode');
 
 module.exports = function(data, cb) {
 
