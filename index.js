@@ -26,19 +26,17 @@ module.exports = function(data, cb) {
   for (i = 0; i < headers.length; i++) {
     var header = headers[i];
 
-    if (header.name && header.name.toLowerCase() === 'to') {
+    if (header.name && header.name.toLowerCase() === 'date') {
+      email.date = new Date(header.value);
+    } else if (header.name && header.name.toLowerCase() === 'to') {
       email.to = header.value;
-    }
-    if (header.name && header.name.toLowerCase() === 'from') {
+    } else if (header.name && header.name.toLowerCase() === 'from') {
       email.from = header.value;
-    }
-    if (header.name && header.name.toLowerCase() === 'subject') {
+    } else if (header.name && header.name.toLowerCase() === 'subject') {
       email.subject = header.value;
-    }
-    if (header.name && header.name.toLowerCase() === 'cc') {
+    } else if (header.name && header.name.toLowerCase() === 'cc') {
       email.cc = header.value;
-    }
-    if (header.name && header.name.toLowerCase() === 'bcc') {
+    } else if (header.name && header.name.toLowerCase() === 'bcc') {
       email.bcc = header.value;
     }
   }
