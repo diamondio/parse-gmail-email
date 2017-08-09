@@ -90,8 +90,9 @@ module.exports = function(data, cb) {
       }
     })
   }
-  if (data.payload.parts) {
-    parseParts(data.payload.parts);
+  if (data.payload) {
+    parseParts([data.payload]);
   }
+  
   return cb(null, email);
 };
