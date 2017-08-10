@@ -29,7 +29,7 @@ module.exports = function(data, cb) {
     if (header.name && header.name.toLowerCase() === 'date') {
       var date = new Date(header.value);
       if (!isNaN(date.getTime())) {
-        email.date = data;
+        email.date = date;
       }
     } else if (header.name && header.name.toLowerCase() === 'to') {
       email.to = header.value;
